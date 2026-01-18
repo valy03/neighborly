@@ -1,7 +1,9 @@
 import { auth } from "@/lib/auth"
 import { getUserItems } from "@/app/actions/items"
 import Link from "next/link"
-import ItemCard from "@/app/components/ItemCard"
+import ItemCard from "../components/ItemCard"
+import { Plus, Package } from "lucide-react"
+import { Button } from "../components/ui/button"
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -9,37 +11,43 @@ export default async function DashboardPage() {
 
   return (
     <div>
-      <div className="mb-8 flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            My Items
-          </h1>
-          <p className="text-gray-600">
-            {items.length} {items.length === 1 ? "item" : "items"} listed
-          </p>
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+              My Items
+            </h1>
+            <p className="text-muted-foreground">
+              {items.length} {items.length === 1 ? "item" : "items"} listed
+            </p>
+          </div>
+          <Link href="/dashboard/items/new">
+            <Button variant="hero" size="lg" className="gap-2">
+              <Plus className="h-5 w-5" />
+              Add Item
+            </Button>
+          </Link>
         </div>
-        <Link
-          href="/dashboard/items/new"
-          className="bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
-        >
-          + Add Item
-        </Link>
       </div>
 
+      {/* Content */}
       {items.length === 0 ? (
-        <div className="bg-white rounded-lg shadow p-12 text-center">
-          <div className="text-6xl mb-4">📦</div>
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+        <div className="flex flex-col items-center justify-center py-20 px-6 rounded-3xl bg-card shadow-soft">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary/10 text-primary mb-6">
+            <Package className="h-10 w-10" />
+          </div>
+          <h3 className="font-display text-2xl font-semibold text-foreground mb-2">
             No items yet
           </h3>
-          <p className="text-gray-600 mb-6">
-            Start sharing by adding your first item
+          <p className="text-muted-foreground mb-8 text-center max-w-sm">
+            Start sharing by adding your first item to the community
           </p>
-          <Link
-            href="/dashboard/items/new"
-            className="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
-          >
-            Add Your First Item
+          <Link href="/dashboard/items/new">
+            <Button variant="hero" size="xl" className="gap-2">
+              <Plus className="h-5 w-5" />
+              Add Your First Item
+            </Button>
           </Link>
         </div>
       ) : (

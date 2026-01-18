@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react"
 import { createItem } from "@/app/actions/items"
 import { getCurrentLocation } from "@/lib/location"
+import { MapPin, Image as ImageIcon, Package, ArrowLeft } from "lucide-react"
+import { Button } from "@/app/components/ui/button"
+import Link from "next/link"
 
 const CATEGORIES = [
   "Tools & Equipment",
@@ -20,7 +23,6 @@ export default function NewItemPage() {
   const [location, setLocation] = useState<{ latitude: number; longitude: number } | null>(null)
 
   useEffect(() => {
-    // Get user's location on mount
     getCurrentLocation().then((loc) => {
       if (loc) {
         setLocation(loc)
@@ -57,33 +59,51 @@ export default function NewItemPage() {
       alert(result.error)
       setLoading(false)
     }
-    // If successful, redirect happens in the action
   }
 
   return (
     <div className="max-w-2xl mx-auto">
+      {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Add New Item</h1>
-        <p className="text-gray-600">
+        <Link 
+          href="/dashboard"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors mb-4"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Dashboard
+        </Link>
+        <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-2">
+          Add New Item
+        </h1>
+        <p className="text-muted-foreground">
           List an item you're willing to lend to your neighbors
         </p>
       </div>
 
+      {/* Location Status */}
       {locationError && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-6">
-          {locationError}
+        <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200">
+          <p className="text-sm text-red-700 flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            {locationError}
+          </p>
         </div>
       )}
 
       {location && (
-        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-6">
-          ✓ Location captured (approximate area for privacy)
+        <div className="mb-6 p-4 rounded-xl bg-primary/5 border border-primary/20">
+          <p className="text-sm text-primary flex items-center gap-2">
+            <MapPin className="h-4 w-4" />
+            Location captured (approximate area for privacy)
+          </p>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow p-6 space-y-6">
+      {/* Form */}
+      <form onSubmit={handleSubmit} className="bg-card rounded-2xl shadow-soft p-6 space-y-6">
+        {/* Title */}
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="title" className="block text-sm font-medium text-foreground mb-2">
             Item Title *
           </label>
           <input
@@ -92,12 +112,13 @@ export default function NewItemPage() {
             name="title"
             required
             placeholder="e.g., Power Drill, Camping Tent, Bread Maker"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background placeholder:text-muted-foreground transition-all"
           />
         </div>
 
+        {/* Description */}
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="description" className="block text-sm font-medium text-foreground mb-2">
             Description
           </label>
           <textarea
@@ -105,19 +126,20 @@ export default function NewItemPage() {
             name="description"
             rows={4}
             placeholder="Add details about the item, its condition, any special instructions..."
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background placeholder:text-muted-foreground transition-all resize-none"
           />
         </div>
 
+        {/* Category */}
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="category" className="block text-sm font-medium text-foreground mb-2">
             Category *
           </label>
           <select
             id="category"
             name="category"
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
+            className="w-full px-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background transition-all"
           >
             <option value="">Select a category</option>
             {CATEGORIES.map((cat) => (
@@ -128,36 +150,47 @@ export default function NewItemPage() {
           </select>
         </div>
 
+        {/* Image URL */}
         <div>
-          <label htmlFor="imageUrl" className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="imageUrl" className="block text-sm font-medium text-foreground mb-2">
             Image URL (optional)
           </label>
-          <input
-            type="url"
-            id="imageUrl"
-            name="imageUrl"
-            placeholder="https://example.com/image.jpg"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-gray-900"
-          />
-          <p className="text-sm text-gray-500 mt-1">
+          <div className="relative">
+            <ImageIcon className="absolute left-3 top-3.5 h-5 w-5 text-muted-foreground" />
+            <input
+              type="url"
+              id="imageUrl"
+              name="imageUrl"
+              placeholder="https://example.com/image.jpg"
+              className="w-full pl-10 pr-4 py-3 border border-border rounded-xl focus:ring-2 focus:ring-primary focus:border-transparent text-foreground bg-background placeholder:text-muted-foreground transition-all"
+            />
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
             Add a link to an image of your item (image upload coming soon!)
           </p>
         </div>
 
-        <div className="flex gap-4 pt-4">
-          <button
+        {/* Actions */}
+        <div className="flex gap-3 pt-4">
+          <Button
             type="submit"
             disabled={loading || !location}
-            className="flex-1 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+            variant="hero"
+            size="lg"
+            className="flex-1 gap-2"
           >
+            <Package className="h-5 w-5" />
             {loading ? "Creating..." : "List Item"}
-          </button>
-          <a
-            href="/dashboard"
-            className="px-6 py-3 border border-gray-300 rounded-lg font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </a>
+          </Button>
+          <Link href="/dashboard">
+            <Button
+              type="button"
+              variant="outline-hero"
+              size="lg"
+            >
+              Cancel
+            </Button>
+          </Link>
         </div>
       </form>
     </div>

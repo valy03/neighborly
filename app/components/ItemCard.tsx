@@ -3,6 +3,9 @@
 import { useState } from "react"
 import { deleteItem, toggleItemAvailability } from "@/app/actions/items"
 import Link from "next/link"
+import { Edit, Trash2, ToggleLeft, ToggleRight } from "lucide-react"
+import { Button } from "../components/ui/button"
+import { Badge } from "../components/ui/badge"
 
 type Item = {
   id: string
@@ -27,7 +30,6 @@ export default function ItemCard({ item }: { item: Item }) {
       alert(result.error)
       setIsDeleting(false)
     }
-    // If successful, page will revalidate
   }
 
   async function handleToggleAvailability() {
@@ -41,93 +43,120 @@ export default function ItemCard({ item }: { item: Item }) {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      {item.imageUrl ? (
-        <img
-          src={item.imageUrl}
-          alt={item.title}
-          className="w-full h-48 object-cover"
-        />
-      ) : (
-        <div className="w-full h-48 bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-          <span className="text-6xl">📦</span>
-        </div>
-      )}
-      
-      <div className="p-4">
-        <div className="flex items-start justify-between mb-2">
-          <h3 className="text-lg font-semibold text-gray-900">{item.title}</h3>
-          <span
-            className={`px-2 py-1 text-xs font-medium rounded ${
+    <>
+      <div className="group relative overflow-hidden rounded-2xl bg-card shadow-soft hover:shadow-medium transition-all duration-300">
+        {/* Image */}
+        <div className="relative aspect-[4/3] overflow-hidden">
+          {item.imageUrl ? (
+            <img
+              src={item.imageUrl}
+              alt={item.title}
+              className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+              <span className="text-6xl">📦</span>
+            </div>
+          )}
+          <Badge 
+            className={`absolute top-3 right-3 ${
               item.available
-                ? "bg-green-100 text-green-800"
-                : "bg-gray-100 text-gray-800"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground"
             }`}
           >
             {item.available ? "Available" : "Unavailable"}
-          </span>
+          </Badge>
         </div>
         
-        <p className="text-sm text-gray-600 mb-2">{item.category}</p>
-        
-        {item.description && (
-          <p className="text-sm text-gray-700 mb-4 line-clamp-2">
-            {item.description}
-          </p>
-        )}
+        {/* Content */}
+        <div className="p-4">
+          <div className="flex items-start justify-between mb-2">
+            <h3 className="font-display text-lg font-semibold text-foreground group-hover:text-primary transition-colors">
+              {item.title}
+            </h3>
+          </div>
+          
+          <p className="text-sm text-muted-foreground mb-2">{item.category}</p>
+          
+          {item.description && (
+            <p className="text-sm text-foreground/80 mb-4 line-clamp-2">
+              {item.description}
+            </p>
+          )}
 
-        <div className="flex gap-2">
-          <button
-            onClick={handleToggleAvailability}
-            disabled={isToggling}
-            className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 text-gray-700"
-          >
-            {isToggling ? "..." : item.available ? "Mark Unavailable" : "Mark Available"}
-          </button>
-          
-          <Link
-            href={`/dashboard/items/${item.id}/edit`}
-            className="px-3 py-2 text-sm border border-gray-300 rounded hover:bg-gray-50 text-gray-700"
-          >
-            Edit
-          </Link>
-          
-          <button
-            onClick={() => setShowDeleteConfirm(true)}
-            className="px-3 py-2 text-sm text-red-600 border border-red-300 rounded hover:bg-red-50"
-          >
-            Delete
-          </button>
+          {/* Actions */}
+          <div className="flex gap-2 pt-2">
+            <Button
+              onClick={handleToggleAvailability}
+              disabled={isToggling}
+              variant="outline-hero"
+              size="sm"
+              className="flex-1 gap-2"
+            >
+              {isToggling ? (
+                "..."
+              ) : item.available ? (
+                <>
+                  <ToggleRight className="h-4 w-4" />
+                  <span className="hidden sm:inline">Unavailable</span>
+                </>
+              ) : (
+                <>
+                  <ToggleLeft className="h-4 w-4" />
+                  <span className="hidden sm:inline">Available</span>
+                </>
+              )}
+            </Button>
+            
+            <Link href={`/dashboard/items/${item.id}/edit`}>
+              <Button variant="outline-hero" size="sm">
+                <Edit className="h-4 w-4" />
+              </Button>
+            </Link>
+            
+            <Button
+              onClick={() => setShowDeleteConfirm(true)}
+              variant="outline-hero"
+              size="sm"
+              className="text-red-600 hover:bg-red-50"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-sm mx-4">
-            <h3 className="text-lg font-semibold mb-2">Delete Item?</h3>
-            <p className="text-gray-600 mb-6">
+        <div className="fixed inset-0 bg-foreground/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-card rounded-2xl p-6 max-w-sm w-full shadow-medium">
+            <h3 className="font-display text-xl font-semibold text-foreground mb-2">
+              Delete Item?
+            </h3>
+            <p className="text-muted-foreground mb-6">
               Are you sure you want to delete "{item.title}"? This action cannot be undone.
             </p>
             <div className="flex gap-3">
-              <button
+              <Button
                 onClick={handleDelete}
                 disabled={isDeleting}
-                className="flex-1 bg-red-600 text-white px-4 py-2 rounded font-semibold hover:bg-red-700 disabled:bg-gray-400"
+                className="flex-1 bg-red-600 text-white hover:bg-red-700"
               >
                 {isDeleting ? "Deleting..." : "Delete"}
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setShowDeleteConfirm(false)}
                 disabled={isDeleting}
-                className="flex-1 border border-gray-300 px-4 py-2 rounded font-semibold hover:bg-gray-50"
+                variant="outline-hero"
+                className="flex-1"
               >
                 Cancel
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   )
 }
