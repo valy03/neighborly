@@ -34,7 +34,7 @@ export default function CTASection({ session }: { session: any }) {
                   <Link href="/dashboard/items/new">
                     <Button 
                       size="xl" 
-                      className="bg-primary-foreground text-primary hover:bg-primary-foreground/90 shadow-medium"
+                      className="bg-primary-foreground text-primary! hover:bg-primary-foreground/90 shadow-medium"
                     >
                       List an Item
                       <ArrowRight className="h-5 w-5" />
